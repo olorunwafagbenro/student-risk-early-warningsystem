@@ -3,18 +3,6 @@
 # Student Learning Risk Early Warning System
 # Teacher-Facing Dashboard
 # ============================================================
-# LOADING STATE
-# ============================================================
-
-if 'loaded' not in st.session_state:
-    with st.spinner("🔄 Loading student risk models..."):
-        model, scaler, config, shap_output = load_artifacts()
-        st.session_state['loaded'] = True
-        st.session_state['model']  = model
-else:
-    model        = st.session_state['model']
-    shap_output  = shap_output  # Already cached
-
 import gzip
 import os
 import streamlit as st
