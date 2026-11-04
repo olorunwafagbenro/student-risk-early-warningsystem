@@ -60,30 +60,28 @@ st.markdown("""
 
 import os, json, gzip, pickle
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 @st.cache_resource
 def load_artifacts():
-    """Load only what the dashboard displays: config + SHAP output."""
-    config_path = os.path.join(BASE_DIR, 'models', 'model_config.json')
-    shap_gz     = os.path.join(BASE_DIR, 'models', 'shap_output.pkl.gz')
-    shap_pkl    = os.path.join(BASE_DIR, 'models', 'shap_output.pkl')
+    """Load all saved model files once and cache them."""
+    try:
+        # Load model and config
+        model  = joblib.load('models/best_model.pkl')
+        scaler = joblib.load('models/scaler.pkl')
 
-    with open(config_path, 'r') as f:
-        config = json.load(f)
+        with open('models/model_config.json', 'r') as f:
+            config = json.load(f)
 
-    if os.path.exists(shap_gz):
-        with gzip.open(shap_gz, 'rb') as f:
+        # Load SHAP output
+        with open('models/shap_output.pkl', 'rb') as f:
             shap_output = pickle.load(f)
-    elif os.path.exists(shap_pkl):
-        with open(shap_pkl, 'rb') as f:
-            shap_output = pickle.load(f)
-    else:
-        st.error("SHAP output file not found in models/.")
+
+        return model, scaler, config, shap_output
+
+    except FileNotFoundError as e:
+        st.error(f"❌ Model file not found: {e}")
         st.stop()
 
-    return config, shap_output
-
-config, shap_output = load_artifacts()
+model, scaler, config, shap_output = load_artifacts()
 
 # Unpack SHAP output
 shap_values   = shap_output['shap_values']
