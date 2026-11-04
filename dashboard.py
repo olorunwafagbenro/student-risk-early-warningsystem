@@ -58,8 +58,10 @@ st.markdown("""
 # LOAD MODEL ARTIFACTS
 # ============================================================
 
-@st.cache_resource
+import os, json, gzip, pickle
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+@st.cache_resource
 def load_artifacts():
     """Load only what the dashboard displays: config + SHAP output."""
     config_path = os.path.join(BASE_DIR, 'models', 'model_config.json')
