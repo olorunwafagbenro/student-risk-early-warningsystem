@@ -59,7 +59,6 @@ st.markdown("""
 # ============================================================
 
 @st.cache_resource
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def load_artifacts():
     """Load only what the dashboard displays: config + SHAP output."""
