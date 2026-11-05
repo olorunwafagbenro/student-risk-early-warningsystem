@@ -32,7 +32,6 @@ import matplotlib.pyplot as plt
 
 warnings.filterwarnings("ignore")
 
-# ------------------------------------------------------------
 # 1. PAGE CONFIG (must be the first Streamlit command)
 # ------------------------------------------------------------
 st.set_page_config(
@@ -42,7 +41,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ------------------------------------------------------------
+
 # 2. CONSTANTS
 # ------------------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -55,18 +54,18 @@ RISK_ORDER = ["High", "Medium", "Low"]
 RISK_COLORS = {"High": "#e74c3c", "Medium": "#e67e22", "Low": "#2ecc71"}
 
 EXPLANATIONS = {
-    "engagement_dropoff": "📉 Platform engagement has dropped significantly",
-    "total_clicks": "🖱️ Very low overall platform activity",
-    "avg_early_score": "📝 Assessment scores were low from the start",
-    "score_trend": "📉 Assessment scores have been declining",
-    "submission_rate": "📋 Assignment completion rate is below average",
-    "late_submission_count": "⏰ Multiple assignments submitted late",
-    "days_since_last_active": "📅 Has not engaged with the platform recently",
-    "num_of_prev_attempts": "🔄 Has attempted this course before",
-    "early_clicks": "🖱️ Low engagement in the first weeks of term",
-    "late_registration": "📆 Registered after the course started",
-    "active_days": "🗓️ Few days of active engagement",
-    "studied_credits": "📚 Heavy course load",
+    "engagement_dropoff": " Platform engagement has dropped significantly",
+    "total_clicks": " Very low overall platform activity",
+    "avg_early_score": " Assessment scores were low from the start",
+    "score_trend": " Assessment scores have been declining",
+    "submission_rate": " Assignment completion rate is below average",
+    "late_submission_count": " Multiple assignments submitted late",
+    "days_since_last_active": " Has not engaged with the platform recently",
+    "num_of_prev_attempts": " Has attempted this course before",
+    "early_clicks": " Low engagement in the first weeks of term",
+    "late_registration": " Registered after the course started",
+    "active_days": " Few days of active engagement",
+    "studied_credits": " Heavy course load",
 }
 
 PROTECTIVE = {
@@ -84,7 +83,7 @@ PROTECTIVE = {
 }
 
 
-# ------------------------------------------------------------
+
 # 3. SMALL HELPERS
 # ------------------------------------------------------------
 def stretch(fn, *args, **kwargs):
@@ -99,7 +98,7 @@ def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
 
 
-# ------------------------------------------------------------
+
 # 4. DATA LOADING (real artifacts, with demo fallback)
 # ------------------------------------------------------------
 DEFAULT_CONFIG = {
@@ -251,7 +250,7 @@ base_value = payload["base_value"]
 threshold = float(config.get("threshold", 0.5))
 
 
-# ------------------------------------------------------------
+
 # 5. BUILD THE STUDENT TABLE
 # ------------------------------------------------------------
 @st.cache_data(show_spinner=False)
@@ -274,23 +273,23 @@ student_df = build_student_df(X, payload["probas"], threshold)
 total = len(student_df)
 
 
-# ------------------------------------------------------------
+
 # 6. SIDEBAR
 # ------------------------------------------------------------
 with st.sidebar:
-    st.title("🎓 Risk Dashboard")
+    st.title(" Risk Dashboard")
     st.markdown("---")
-    st.subheader("🔍 Filters")
+    st.subheader(" Filters")
 
     risk_filter = st.multiselect(
         "Risk level", RISK_ORDER, default=["High", "Medium"]
     )
     flagged_only = st.toggle("Flagged students only", value=False)
     score_range = st.slider("Risk score range (%)", 0, 100, (0, 100))
-    search_id = st.text_input("🔎 Search student ID", placeholder="e.g. S1042")
+    search_id = st.text_input(" Search student ID", placeholder="e.g. S1042")
 
     st.markdown("---")
-    st.subheader("📊 Model info")
+    st.subheader(" Model info")
     st.caption(f"Model: {config.get('model_name', 'N/A')}")
     st.caption(f"Flag threshold: {threshold:.0%}")
     st.caption(f"Trained: {config.get('training_date', 'N/A')}")
@@ -298,7 +297,7 @@ with st.sidebar:
     st.caption("Data: " + ("live model output" if mode == "live" else "demo data"))
 
     st.markdown("---")
-    st.subheader("📥 Export")
+    st.subheader(" Export")
     export_cols = [
         c for c in ["student_id", "risk_pct", "risk_level",
                     "avg_early_score", "submission_rate", "total_clicks"]
@@ -306,7 +305,7 @@ with st.sidebar:
     ]
     export_df = student_df.loc[student_df["flagged"] == 1, export_cols]
     st.download_button(
-        "⬇️ Download flagged students",
+        " Download flagged students",
         data=export_df.to_csv(index=False),
         file_name="flagged_students.csv",
         mime="text/csv",
@@ -334,7 +333,7 @@ if mode == "demo":
             st.code(list_repo_files())
 
 
-# ------------------------------------------------------------
+
 # 8. OVERVIEW CARDS
 # ------------------------------------------------------------
 high_n = int((student_df["risk_level"] == "High").sum())
@@ -344,25 +343,25 @@ flagged_n = int(student_df["flagged"].sum())
 
 c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric("Total students", f"{total:,}")
-c2.metric("🔴 High risk", f"{high_n:,}", f"{high_n / total:.1%} of cohort",
+c2.metric(" High risk", f"{high_n:,}", f"{high_n / total:.1%} of cohort",
           delta_color="off")
-c3.metric("🟡 Medium risk", f"{med_n:,}", f"{med_n / total:.1%} of cohort",
+c3.metric(" Medium risk", f"{med_n:,}", f"{med_n / total:.1%} of cohort",
           delta_color="off")
-c4.metric("🟢 Low risk", f"{low_n:,}", f"{low_n / total:.1%} of cohort",
+c4.metric(" Low risk", f"{low_n:,}", f"{low_n / total:.1%} of cohort",
           delta_color="off")
-c5.metric("⚑ Flagged for review", f"{flagged_n:,}",
+c5.metric(" Flagged for review", f"{flagged_n:,}",
           f"avg risk {student_df['risk_pct'].mean():.1f}%", delta_color="off")
 
 st.markdown("---")
 
 
-# ------------------------------------------------------------
+
 # 9. DISTRIBUTION CHARTS
 # ------------------------------------------------------------
 left, right = st.columns(2)
 
 with left:
-    st.subheader("📊 Risk level distribution")
+    st.subheader(" Risk level distribution")
     counts = (
         student_df["risk_level"].value_counts()
         .reindex(RISK_ORDER).fillna(0).reset_index()
@@ -377,7 +376,7 @@ with left:
     stretch(st.plotly_chart, fig_pie)
 
 with right:
-    st.subheader("📈 Risk score distribution")
+    st.subheader(" Risk score distribution")
     fig_hist = px.histogram(
         student_df, x="risk_pct", color="risk_level", nbins=40,
         color_discrete_map=RISK_COLORS,
@@ -393,7 +392,7 @@ st.markdown("---")
 # ------------------------------------------------------------
 # 10. STUDENT TABLE (filtered, capped)
 # ------------------------------------------------------------
-st.subheader("👥 Student risk table")
+st.subheader(" Student risk table")
 
 filtered = student_df.copy()
 if risk_filter:
@@ -448,10 +447,10 @@ st.caption(
 st.markdown("---")
 
 
-# ------------------------------------------------------------
+
 # 11. INDIVIDUAL STUDENT ANALYSIS
 # ------------------------------------------------------------
-st.subheader("🔬 Individual student analysis")
+st.subheader(" Individual student analysis")
 
 options = filtered["student_id"].head(MAX_SELECT_OPTIONS).tolist()
 
@@ -500,21 +499,21 @@ else:
                        delta_color="off")
 
     # --- plain-English reasons from SHAP ---
-    st.markdown("#### 🧠 Why was this student flagged?")
+    st.markdown("####  Why was this student flagged?")
     sv = pd.Series(shap_values[idx], index=feature_names)
     top_risk = sv[sv > 0].sort_values(ascending=False).head(3)
     top_protect = sv[sv < 0].sort_values().head(2)
 
     a, b = st.columns(2)
     with a:
-        st.markdown("**🔴 Risk-increasing signals**")
+        st.markdown("** Risk-increasing signals**")
         if len(top_risk):
             for feat in top_risk.index:
                 st.markdown(f"- {EXPLANATIONS.get(feat, feat)}")
         else:
             st.markdown("- No strong risk signals detected")
     with b:
-        st.markdown("**🟢 Protective factors**")
+        st.markdown("** Protective factors**")
         if len(top_protect):
             for feat in top_protect.index:
                 st.markdown(f"- {PROTECTIVE.get(feat, feat)}")
@@ -522,7 +521,7 @@ else:
             st.markdown("- No strong protective factors detected")
 
     # --- lightweight SHAP bar chart (matplotlib only) ---
-    st.markdown("#### 📊 Signal breakdown")
+    st.markdown("####  Signal breakdown")
     top = sv.reindex(sv.abs().sort_values(ascending=False).head(10).index)
     top = top.iloc[::-1]  # biggest at the top of the chart
 
@@ -538,7 +537,7 @@ else:
     plt.close(fig)
 
     # --- intervention log (session only) ---
-    st.markdown("#### 📋 Teacher action panel")
+    st.markdown("####  Teacher action panel")
     st.session_state.setdefault("action_log", [])
 
     x1, x2 = st.columns(2)
@@ -560,7 +559,7 @@ else:
         notes = st.text_area("Teacher notes", height=100,
                              placeholder="Observations or context...")
 
-    if st.button("💾 Save action", type="primary"):
+    if st.button("💾Save action", type="primary"):
         if intervention == "-- Select --":
             st.warning("Please choose an intervention first.")
         else:
@@ -578,7 +577,7 @@ else:
         with st.expander(f"Actions logged this session ({len(log_df)})"):
             stretch(st.dataframe, log_df, hide_index=True)
             st.download_button(
-                "⬇️ Download action log", log_df.to_csv(index=False),
+                " Download action log", log_df.to_csv(index=False),
                 "action_log.csv", "text/csv",
             )
             st.caption(
@@ -588,6 +587,6 @@ else:
 
 st.markdown("---")
 st.caption(
-    "🎓 Student Learning Risk Early Warning System · predictions support "
+    " Student Learning Risk Early Warning System · predictions support "
     "teacher judgment, not replace it · built on OULAD"
 )
