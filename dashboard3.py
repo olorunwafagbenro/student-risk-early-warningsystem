@@ -27,6 +27,18 @@ import streamlit as st
 import plotly.express as px
 import matplotlib
 
+# LOADING STATE
+# ============================================================
+
+if 'loaded' not in st.session_state:
+    with st.spinner("🔄 Loading student risk models..."):
+        model, scaler, config, shap_output = load_artifacts()
+        st.session_state['loaded'] = True
+        st.session_state['model']  = model
+else:
+    model        = st.session_state['model']
+    shap_output  = shap_output  # Already cached
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
